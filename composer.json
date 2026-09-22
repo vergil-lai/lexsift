@@ -1,8 +1,22 @@
 {
   "name": "vergil-lai/lexsift",
-  "description": "PHP extension for fast keyword and phrase matching.",
+  "description": "PHP extension for fast keyword and phrase matching using Aho–Corasick.",
+  "keywords": [
+    "php-extension",
+    "keyword-matching",
+    "phrase-matching",
+    "text-matching",
+    "unicode",
+    "aho-corasick",
+    "sensitive-filter"
+  ],
+  "homepage": "https://github.com/vergil-lai/lexsift",
   "type": "php-ext",
   "license": "MIT",
+  "support": {
+    "issues": "https://github.com/vergil-lai/lexsift/issues",
+    "source": "https://github.com/vergil-lai/lexsift"
+  },
   "require": {
     "php": ">=8.1"
   },

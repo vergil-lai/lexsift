@@ -3,7 +3,7 @@ name = "lexsift"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
-description = "Native PHP keyword matching powered by Rust and Aho-Corasick"
+description = "PHP extension for fast keyword and phrase matching using Aho–Corasick."
 
 [lib]
 crate-type = ["cdylib", "rlib"]
