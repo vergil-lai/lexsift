@@ -1,0 +1,23 @@
+[package]
+name = "lexsift"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "Native PHP keyword matching powered by Rust and Aho-Corasick"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["php"]
+php = ["dep:ext-php-rs"]
+
+[dependencies]
+aho-corasick = "=1.1.4"
+ext-php-rs = { version = "=0.15.15", optional = true }
+regex = "=1.12.4"
+unicode-normalization = "=0.1.25"
+unicode-segmentation = "=1.13.3"
+
+[profile.release]
+strip = "debuginfo"

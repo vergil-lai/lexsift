@@ -1,0 +1,18 @@
+{
+    "name": "vergil-lai/lexsift-tests-php81",
+    "description": "Isolated PHP 8.1 test dependencies for LexSift",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "pestphp/pest": "^1.23.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "platform": {
+            "php": "8.1.0"
+        },
+        "sort-packages": true
+    }
+}

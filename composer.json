@@ -1,0 +1,19 @@
+{
+  "name": "vergil-lai/lexsift",
+  "description": "PHP extension for fast keyword and phrase matching.",
+  "type": "php-ext",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.1"
+  },
+  "replace": {
+    "ext-lexsift": "*"
+  },
+  "php-ext": {
+    "extension-name": "lexsift",
+    "os-families": [
+      "linux",
+      "darwin"
+    ]
+  }
+}
