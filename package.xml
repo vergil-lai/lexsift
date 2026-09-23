@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package version="2.0" xmlns="http://pear.php.net/dtd/package-2.0">
+ <name>lexsift</name>
+ <channel>pecl.php.net</channel>
+ <summary>Fast keyword and phrase matching using Aho-Corasick</summary>
+ <description>Rust-powered PHP extension for keyword matching, phrase whitelists and text masking.</description>
+ <lead>
+  <name>Vergil</name>
+  <user>vergil-lai</user>
+  <email>vergil@vip.163.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2026-09-23</date>
+ <version><release>0.1.0</release><api>0.1.0</api></version>
+ <stability><release>alpha</release><api>alpha</api></stability>
+ <license uri="https://opensource.org/licenses/MIT">MIT</license>
+ <notes>Source installation support for install-php-extensions.</notes>
+ <contents>
+  <dir name="/">
+   <file name="Cargo.toml" role="src"/>
+   <file name="Cargo.lock" role="src"/>
+   <file name="config.m4" role="src"/>
+   <file name="Makefile.frag" role="src"/>
+   <file name="LICENSE" role="doc"/>
+   <file name="README.md" role="doc"/>
+   <dir name=".cargo">
+    <file name="config.toml" role="src"/>
+   </dir>
+   <dir name="src">
+    <file name="engine.rs" role="src"/>
+    <file name="lib.rs" role="src"/>
+    <file name="normalize.rs" role="src"/>
+    <file name="php.rs" role="src"/>
+   </dir>
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php><min>8.1.0</min></php>
+   <pearinstaller><min>1.10.0</min></pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>lexsift</providesextension>
+ <extsrcrelease/>
+</package>

@@ -1,0 +1,12 @@
+**
+!package.xml
+!Cargo.toml
+!Cargo.lock
+!config.m4
+!Makefile.frag
+!LICENSE
+!README.md
+!.cargo/
+!.cargo/config.toml
+!src/
+!src/*.rs

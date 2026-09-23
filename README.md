@@ -26,6 +26,26 @@ php --ri lexsift
 
 应用可在 `composer.json` 中声明 `"ext-lexsift": "*"`。本仓库的 Composer 包仅用于 PIE 安装，不包含 PHP 用户态实现。IDE 类型声明见 [stub](stubs/lexsift.stub.php)。
 
+### Docker（install-php-extensions）
+
+支持上游 [install-php-extensions 的源码安装方式](https://github.com/mlocati/docker-php-extension-installer#installing-an-extension-from-its-source-code)。仓库内的 `package.xml` 提供扩展元数据；Rust/Cargo 和 Clang/libclang 需要预先安装，上游安装器尚未为 LexSift 自动管理这些依赖。当前不能直接使用 `install-php-extensions lexsift`，本项目未发布到 PECL。
+
+仓库提供基于官方 PHP Debian Bookworm 镜像的 [Dockerfile](docker/Dockerfile)，使用多阶段构建，最终镜像仅保留 PHP 与已启用的扩展：
+
+```sh
+docker build -f docker/Dockerfile -t lexsift-php .
+docker run --rm lexsift-php php --ri lexsift
+docker run --rm -i lexsift-php php < tests/docker/smoke.php
+```
+
+默认 PHP 8.5，可通过 `--build-arg PHP_VERSION=8.1` 等参数选择版本。默认执行 `install-php-extensions /usr/src/lexsift`，验证当前本地源码；如需安装远程版本，可传入 `--build-arg LEXSIFT_SOURCE=vergil-lai/lexsift@<commit-or-tag>`。远程引用必须已包含 `package.xml`，生产环境建议固定提交或版本标签。
+
+在已准备好上述构建依赖的官方 PHP 镜像中，也可以直接执行：
+
+```sh
+install-php-extensions vergil-lai/lexsift@<commit-or-tag>
+```
+
 ### 源码构建
 
 在不含空格的仓库目录执行：
