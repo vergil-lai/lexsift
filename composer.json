@@ -6,7 +6,6 @@
     "keyword-matching",
     "phrase-matching",
     "text-matching",
-    "unicode",
     "aho-corasick",
     "sensitive-filter"
   ],

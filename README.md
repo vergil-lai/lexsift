@@ -1,6 +1,6 @@
 # LexSift
 
-LexSift 是使用 Rust 和 [ext-php-rs](https://github.com/extphprs/ext-php-rs) 实现的 PHP 扩展，以 Rust [aho-corasick](https://github.com/BurntSushi/aho-corasick) 为后端，检测敏感词、关键词和普通文本短语。支持全角与半角转换、大小写统一、忽略空白等文本处理，并提供重叠匹配、短语白名单和原文脱敏。
+LexSift 是使用 Rust 和 [ext-php-rs](https://github.com/extphprs/ext-php-rs) 实现的 PHP 扩展，以 Rust [aho-corasick](https://github.com/BurntSushi/aho-corasick) 为后端，适用于敏感词检测、关键词检索和文本替换。支持全角与半角转换、大小写统一、忽略空白等文本处理，并提供重叠匹配、短语白名单和原文脱敏。
 
 通过 `LexSift\Matcher` 创建独立的匹配器实例。词库在构造或替换时编译，后续查询直接复用。
 
@@ -28,22 +28,20 @@ php --ri lexsift
 
 ### Docker（install-php-extensions）
 
-支持上游 [install-php-extensions 的源码安装方式](https://github.com/mlocati/docker-php-extension-installer#installing-an-extension-from-its-source-code)。仓库内的 `package.xml` 提供扩展元数据；Rust/Cargo 和 Clang/libclang 需要预先安装，上游安装器尚未为 LexSift 自动管理这些依赖。当前不能直接使用 `install-php-extensions lexsift`，本项目未发布到 PECL。
+在自己的官方 PHP 镜像 Dockerfile 中，安装好 Rust/Cargo 和 Clang/libclang 后，添加：
 
-仓库提供基于官方 PHP Debian Bookworm 镜像的 [Dockerfile](docker/Dockerfile)，使用多阶段构建，最终镜像仅保留 PHP 与已启用的扩展：
+```dockerfile
+COPY --from=ghcr.io/mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions "vergil-lai/lexsift@<commit-or-tag>"
+```
+
+将 `<commit-or-tag>` 替换为包含 `package.xml` 的提交或版本标签。安装后会自动启用扩展。当前需使用这种[源码安装方式](https://github.com/mlocati/docker-php-extension-installer#installing-an-extension-from-its-source-code)，暂不支持直接运行 `install-php-extensions lexsift`。
+
+完整的依赖安装和多阶段构建示例见 [Dockerfile](docker/Dockerfile)。如需从本地源码构建验证镜像：
 
 ```sh
 docker build -f docker/Dockerfile -t lexsift-php .
 docker run --rm lexsift-php php --ri lexsift
-docker run --rm -i lexsift-php php < tests/docker/smoke.php
-```
-
-默认 PHP 8.5，可通过 `--build-arg PHP_VERSION=8.1` 等参数选择版本。默认执行 `install-php-extensions /usr/src/lexsift`，验证当前本地源码；如需安装远程版本，可传入 `--build-arg LEXSIFT_SOURCE=vergil-lai/lexsift@<commit-or-tag>`。远程引用必须已包含 `package.xml`，生产环境建议固定提交或版本标签。
-
-在已准备好上述构建依赖的官方 PHP 镜像中，也可以直接执行：
-
-```sh
-install-php-extensions vergil-lai/lexsift@<commit-or-tag>
 ```
 
 ### 源码构建
@@ -172,6 +170,10 @@ Benchmark 覆盖 100、1,000、10,000 词，短/长文本，无命中、首部/�
 Windows 需要与 PHP ABI、架构及线程安全模式匹配的预构建 DLL；本项目未提供 Windows 构建产物，PIE 元数据仅声明 Linux 和 macOS。
 
 `php --ri lexsift` 可查看扩展版本、Aho–Corasick 后端、Unicode 实现与数据版本。
+
+## 纯 PHP 版本
+
+如果不便安装原生扩展，可以使用 [LexSift PHP](https://github.com/vergil-lai/lexsift-php)。它以 PHP 实现 Aho–Corasick 匹配，方法、参数和返回值约定与本扩展一致。纯 PHP 版本使用 `VergilLai\LexSift\Matcher`，本扩展使用 `LexSift\Matcher`；不同环境的 Unicode 数据版本可能导致个别字符的处理结果不同。
 
 ## 协议
 
