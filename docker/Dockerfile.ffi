@@ -1,0 +1,24 @@
+ARG DIST=bookworm
+ARG PHP_VERSION=8.5
+FROM rust:1.96.1-${DIST} AS build
+WORKDIR /app
+RUN if command -v apk >/dev/null; then apk add --no-cache build-base; fi
+COPY Cargo.toml Cargo.lock ./
+COPY .cargo .cargo
+COPY src src
+COPY scripts/build-ffi.sh scripts/build-ffi.sh
+RUN sh scripts/build-ffi.sh
+
+FROM php:${PHP_VERSION}-cli-${DIST} AS test
+RUN if command -v apk >/dev/null; then \
+      apk add --no-cache libffi-dev $PHPIZE_DEPS; \
+    else \
+      apt-get update && apt-get install -y --no-install-recommends libffi-dev \
+      && rm -rf /var/lib/apt/lists/*; \
+    fi \
+    && docker-php-ext-install ffi
+WORKDIR /app
+COPY ffi ffi
+COPY --from=build /app/ffi/lib ffi/lib
+COPY tests/ffi/lifecycle.php tests/ffi/lifecycle.php
+CMD ["php", "-d", "ffi.enable=true", "tests/ffi/lifecycle.php"]

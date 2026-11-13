@@ -12,6 +12,13 @@
   "homepage": "https://github.com/vergil-lai/lexsift",
   "type": "php-ext",
   "license": "MIT",
+  "authors": [
+    {
+      "name": "Vergil",
+      "email": "vergil@vip.163.com",
+      "role": "Developer"
+    }
+  ],
   "support": {
     "issues": "https://github.com/vergil-lai/lexsift/issues",
     "source": "https://github.com/vergil-lai/lexsift"

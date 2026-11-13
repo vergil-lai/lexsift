@@ -3,10 +3,13 @@
 //! 匹配和 Unicode 处理保留在内部模块；启用 `php` 特性时注册
 //! `LexSift\Matcher`，关闭该特性时仍可独立运行核心单元测试。
 
-#[cfg(any(feature = "php", test))]
+#[cfg(any(feature = "php", feature = "ffi", test))]
 mod engine;
-#[cfg(any(feature = "php", test))]
+#[cfg(any(feature = "php", feature = "ffi", test))]
 mod normalize;
+
+#[cfg(feature = "ffi")]
+mod ffi;
 
 #[cfg(feature = "php")]
 mod php;

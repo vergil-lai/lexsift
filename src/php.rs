@@ -4,7 +4,7 @@ use crate::engine::Engine;
 use crate::normalize::{Options, normalize};
 use ext_php_rs::binary_slice::BinarySlice;
 use ext_php_rs::boxed::ZBox;
-use ext_php_rs::convert::FromZval;
+use ext_php_rs::convert::{FromZval, StubLiteral};
 use ext_php_rs::flags::DataType;
 use ext_php_rs::prelude::*;
 use ext_php_rs::types::array::Iter;
@@ -47,6 +47,15 @@ impl<'a> From<&'a str> for PhpString<'a> {
     }
 }
 
+/// 启动时为字符串默认值生成 PHP 字面量，不依赖 Zend 分配器。
+impl StubLiteral for PhpString<'_> {
+    fn stub_literal(&self) -> String {
+        std::str::from_utf8(self.0)
+            .expect("PHP string defaults must be valid UTF-8")
+            .stub_literal()
+    }
+}
+
 impl<'a> FromZval<'a> for DictionaryInput<'a> {
     const TYPE: DataType = DataType::Array;
 
@@ -61,6 +70,13 @@ impl From<[(); 0]> for DictionaryInput<'_> {
     }
 }
 
+/// 此参数类型仅提供空数组默认值，供 PHP 反射读取。
+impl StubLiteral for DictionaryInput<'_> {
+    fn stub_literal(&self) -> String {
+        "[]".to_owned()
+    }
+}
+
 impl<'a> FromZval<'a> for OptionsInput<'a> {
     const TYPE: DataType = DataType::Array;
 
@@ -72,6 +88,13 @@ impl<'a> FromZval<'a> for OptionsInput<'a> {
 impl From<[(); 0]> for OptionsInput<'_> {
     fn from(_: [(); 0]) -> Self {
         Self(None)
+    }
+}
+
+/// 此参数类型仅提供空数组默认值，供 PHP 反射读取。
+impl StubLiteral for OptionsInput<'_> {
+    fn stub_literal(&self) -> String {
+        "[]".to_owned()
     }
 }
 
@@ -127,7 +150,7 @@ impl Matcher {
     }
 
     /// 在原文上合并并替换有效命中范围；空 replacement 表示删除。
-    #[php(defaults(replacement = "*".into()))]
+    #[php(defaults(replacement = PhpString::from("*")))]
     pub fn mask(&self, text: PhpString<'_>, replacement: PhpString<'_>) -> PhpResult<String> {
         Ok(self
             .engine

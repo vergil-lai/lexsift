@@ -1,0 +1,119 @@
+name: FFI binaries
+
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'ffi/**', '!ffi/lib/**', 'Cargo.*', '.cargo/**', 'scripts/build-ffi.sh', 'scripts/ffi-manifest.php', 'tests/ffi/lifecycle.php', 'docker/Dockerfile.ffi', '.github/workflows/ffi.yml']
+  pull_request:
+    paths: ['src/**', 'ffi/**', '!ffi/lib/**', 'Cargo.*', '.cargo/**', 'scripts/build-ffi.sh', 'scripts/ffi-manifest.php', 'tests/ffi/lifecycle.php', 'docker/Dockerfile.ffi', '.github/workflows/ffi.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ffi-binaries-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            dist: bookworm
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            dist: bookworm
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+            dist: alpine
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+            dist: alpine
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - runner: macos-15
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: dtolnay/rust-toolchain@master
+        if: runner.os == 'macOS'
+        with:
+          toolchain: 1.96.1
+      - uses: shivammathur/setup-php@v2
+        if: runner.os == 'macOS'
+        with:
+          php-version: '8.5'
+          extensions: ffi
+          coverage: none
+      - name: Build and test macOS library
+        if: runner.os == 'macOS'
+        run: |
+          sh scripts/build-ffi.sh '${{ matrix.target }}'
+          php -d ffi.enable=true tests/ffi/lifecycle.php
+      - name: Build and test Linux library
+        if: runner.os == 'Linux'
+        run: |
+          docker build -f docker/Dockerfile.ffi --build-arg DIST='${{ matrix.dist }}' -t lexsift-ffi .
+          docker run --rm lexsift-ffi
+          if [ '${{ matrix.dist }}' = bookworm ]; then
+            docker run --rm lexsift-ffi sh -c 'touch /lib/ld-musl-lexsift-test.so.1 && php -d ffi.enable=true tests/ffi/lifecycle.php'
+          fi
+          container=$(docker create lexsift-ffi)
+          mkdir -p ffi/lib
+          docker cp "$container:/app/ffi/lib/${{ matrix.target }}" ffi/lib/
+          docker rm "$container"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ffi-${{ matrix.target }}
+          path: ffi/lib/${{ matrix.target }}/
+          if-no-files-found: error
+
+  commit:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ffi-*
+          path: target/ffi-artifacts
+      - name: Assemble and record all platform binaries
+        run: |
+          for artifact in target/ffi-artifacts/ffi-*; do
+            target=${artifact##*/ffi-}
+            mkdir -p "ffi/lib/$target"
+            cp "$artifact"/liblexsift.* "ffi/lib/$target/"
+          done
+          php scripts/ffi-manifest.php --write
+      - name: Commit generated binaries to main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f ffi/lib/
+          if git diff --cached --quiet; then
+            php scripts/ffi-manifest.php --check
+            echo 'FFI binaries already up to date'
+            exit 0
+          fi
+          git commit -m 'build: update FFI binaries'
+          git fetch origin main
+          git rebase origin/main
+          php scripts/ffi-manifest.php --check
+          git push origin HEAD:main

@@ -1,5 +1,6 @@
 [target.'cfg(target_os = "macos")']
-rustflags = ["-C", "link-arg=-Wl,-undefined,dynamic_lookup"]
+# Rust 1.96 的 strip 可能生成 macOS 27 无法加载的 Mach-O，见 rust-lang/rust#157750。
+rustflags = ["-C", "link-arg=-Wl,-undefined,dynamic_lookup", "-C", "strip=none"]
 
 [target.x86_64-pc-windows-msvc]
 linker = "rust-lld"

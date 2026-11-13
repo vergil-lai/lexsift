@@ -9,7 +9,7 @@ ENV CARGO_HOME=/usr/local/cargo RUSTUP_HOME=/usr/local/rustup
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 RUN apt-get update && apt-get install -y --no-install-recommends clang libclang-dev \
     && rm -rf /var/lib/apt/lists/*
-COPY package.xml Cargo.toml Cargo.lock config.m4 Makefile.frag LICENSE README.md /usr/src/lexsift/
+COPY package.xml Cargo.toml Cargo.lock config.m4 Makefile.frag LICENSE README.md README_zh.md /usr/src/lexsift/
 COPY .cargo /usr/src/lexsift/.cargo
 COPY src /usr/src/lexsift/src
 ARG LEXSIFT_SOURCE=/usr/src/lexsift

@@ -10,8 +10,8 @@
   <email>vergil@vip.163.com</email>
   <active>yes</active>
  </lead>
- <date>2026-09-23</date>
- <version><release>0.1.0</release><api>0.1.0</api></version>
+ <date>2026-11-13</date>
+ <version><release>0.2.0</release><api>0.2.0</api></version>
  <stability><release>alpha</release><api>alpha</api></stability>
  <license uri="https://opensource.org/licenses/MIT">MIT</license>
  <notes>Source installation support for install-php-extensions.</notes>
@@ -23,11 +23,13 @@
    <file name="Makefile.frag" role="src"/>
    <file name="LICENSE" role="doc"/>
    <file name="README.md" role="doc"/>
+   <file name="README_zh.md" role="doc"/>
    <dir name=".cargo">
     <file name="config.toml" role="src"/>
    </dir>
    <dir name="src">
     <file name="engine.rs" role="src"/>
+    <file name="ffi.rs" role="src"/>
     <file name="lib.rs" role="src"/>
     <file name="normalize.rs" role="src"/>
     <file name="php.rs" role="src"/>

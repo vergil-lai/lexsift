@@ -1,0 +1,33 @@
+{
+  "name": "vergil-lai/lexsift-ffi",
+  "description": "Rust-powered keyword matching for PHP through FFI, with precompiled native libraries.",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "ffi",
+    "keyword-matching",
+    "aho-corasick",
+    "sensitive-filter"
+  ],
+  "homepage": "https://github.com/vergil-lai/lexsift",
+  "authors": [
+    {
+      "name": "Vergil",
+      "email": "vergil@vip.163.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/vergil-lai/lexsift/issues",
+    "source": "https://github.com/vergil-lai/lexsift"
+  },
+  "require": {
+    "php": ">=8.1",
+    "ext-ffi": "*"
+  },
+  "autoload": {
+    "files": [
+      "autoload.php"
+    ]
+  }
+}

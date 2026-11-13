@@ -5,13 +5,11 @@ on:
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
-      - 'composer.json'
       - 'stubs/**'
   pull_request:
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
-      - 'composer.json'
       - 'stubs/**'
 
 permissions:
@@ -48,6 +46,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: ffi
           coverage: none
           tools: composer, pie
       - uses: dtolnay/rust-toolchain@master
@@ -64,9 +63,13 @@ jobs:
         if: runner.os == 'macOS'
         run: brew list autoconf || brew install autoconf
       - run: composer validate --strict
+      - run: composer validate --strict --working-dir=ffi
       - run: cargo fmt --check
       - run: cargo clippy --locked --no-default-features --all-targets -- -D warnings
       - run: cargo test --locked --no-default-features
+      - run: cargo clippy --locked --no-default-features --features ffi --all-targets -- -D warnings
+      - run: cargo test --locked --no-default-features --features ffi
+      - run: sh scripts/build-ffi.sh
       - run: sh scripts/build.sh
       - run: cargo clippy --locked --lib -- -D warnings
       - run: php -n -d extension="$PWD/target/php-build/modules/lexsift.so" --ri lexsift
@@ -74,6 +77,12 @@ jobs:
         env:
           COMPOSER: ${{ matrix.php == '8.1' && 'composer-php81.json' || matrix.php == '8.5' && 'composer-php85.json' || 'composer.json' }}
       - run: sh scripts/test-php.sh
+      - run: sh scripts/test-ffi.sh
+      - run: php -n -d extension="$PWD/target/php-build/modules/lexsift.so" tests/ffi/extension.php
+      - run: php tests/ffi/distribution.php
+      - run: php -d ffi.enable=true tests/ffi/composer-install.php
+      - run: php tests/ffi/mirror.php
+      - run: php tests/ffi/manifest.php
       - name: Install local package through PIE
         if: matrix.os == 'ubuntu-latest' && matrix.php == '8.5'
         run: sh scripts/test-pie.sh

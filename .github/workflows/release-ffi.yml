@@ -1,0 +1,56 @@
+name: Publish FFI mirror
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing source release tag (for retry)
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-ffi
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.event.release.tag_name }}
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: ffi, zip
+          coverage: none
+          tools: composer
+      - name: Validate release and distribution
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          version=$(sed -n 's/^version = "\([^"]*\)"/\1/p' Cargo.toml | head -1)
+          test "$RELEASE_TAG" = "v$version"
+          composer validate --strict --working-dir=ffi
+          php scripts/ffi-manifest.php --check
+          php scripts/package.php --release
+          php tests/ffi/distribution.php
+          php -d ffi.enable=true tests/ffi/composer-install.php
+          php tests/ffi/mirror.php
+      - name: Attach source and FFI archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" target/dist/*.zip --clobber
+      - name: Publish FFI-only repository and tag
+        env:
+          GH_TOKEN: ${{ secrets.FFI_MIRROR_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: sh scripts/publish-ffi.sh "$RELEASE_TAG"

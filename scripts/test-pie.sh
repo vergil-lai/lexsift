@@ -8,7 +8,7 @@ phpize_bin=${PHPIZE:-$(dirname "$php_config")/phpize}
 task_tmp=$(mktemp -d)
 trap 'rm -rf "$task_tmp"' EXIT HUP INT TERM
 mkdir -p "$task_tmp/package"
-cp Cargo.toml Cargo.lock composer.json config.m4 Makefile.frag README.md LICENSE "$task_tmp/package/"
+cp Cargo.toml Cargo.lock composer.json config.m4 Makefile.frag README.md README_zh.md LICENSE "$task_tmp/package/"
 cp -R .cargo src stubs "$task_tmp/package/"
 extension_dir=$("$php_config" --extension-dir)
 mkdir -p "$task_tmp/root$extension_dir"

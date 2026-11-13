@@ -1,6 +1,6 @@
 [package]
 name = "lexsift"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 license = "MIT"
 description = "PHP extension for fast keyword and phrase matching using Aho–Corasick."
@@ -11,10 +11,11 @@ crate-type = ["cdylib", "rlib"]
 [features]
 default = ["php"]
 php = ["dep:ext-php-rs"]
+ffi = []
 
 [dependencies]
 aho-corasick = "=1.1.4"
-ext-php-rs = { version = "=0.15.15", optional = true }
+ext-php-rs = { version = "=0.16.4", optional = true }
 regex = "=1.12.4"
 unicode-normalization = "=0.1.25"
 unicode-segmentation = "=1.13.3"

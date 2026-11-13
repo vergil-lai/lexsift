@@ -1,4 +1,6 @@
 /target
+# 忽略未跟踪的本地编译产物；编译 CI 用 git add -f 提交，已跟踪文件仍正常更新。
+/ffi/lib/
 /.serena/
 /docs/
 /.libs/

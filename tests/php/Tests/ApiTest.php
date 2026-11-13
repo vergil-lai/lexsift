@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 test('extension smoke and matching API', function (): void {
-    expect(extension_loaded('lexsift'))->toBe(true);
+    expect(extension_loaded('lexsift'))->toBe(getenv('LEXSIFT_TEST_BACKEND') !== 'ffi');
     $matcher = new LexSift\Matcher(terms: ['赌博'], options: ['lowercase' => false]);
     expect($matcher->contains('前赌 博后'))->toBe(true);
     expect($matcher->scan('前赌 博后'))->toBe([['term' => '赌博', 'text' => '赌 博', 'start' => 3, 'end' => 10]]);
