@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
         php: ['8.1', '8.2', '8.3', '8.4', '8.5']
         include:
           - os: macos-latest
@@ -58,7 +58,10 @@ jobs:
           key: ${{ matrix.os }}-php-${{ matrix.php }}
       - name: Install Linux build dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y autoconf clang libclang-dev
+        run: |
+          sudo apt-get update && sudo apt-get install -y autoconf clang-18 libclang-18-dev
+          echo 'CLANG_PATH=/usr/bin/clang-18' >> "$GITHUB_ENV"
+          echo 'LIBCLANG_PATH=/usr/lib/llvm-18/lib' >> "$GITHUB_ENV"
       - name: Install macOS build dependencies
         if: runner.os == 'macOS'
         run: brew list autoconf || brew install autoconf
@@ -84,5 +87,5 @@ jobs:
       - run: php tests/ffi/mirror.php
       - run: php tests/ffi/manifest.php
       - name: Install local package through PIE
-        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.5'
+        if: matrix.os == 'ubuntu-24.04' && matrix.php == '8.5'
         run: sh scripts/test-pie.sh
