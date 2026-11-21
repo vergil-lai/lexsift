@@ -10,11 +10,11 @@
   <email>vergil@vip.163.com</email>
   <active>yes</active>
  </lead>
- <date>2026-11-13</date>
- <version><release>0.2.0</release><api>0.2.0</api></version>
+ <date>2026-11-21</date>
+ <version><release>0.2.1</release><api>0.2.0</api></version>
  <stability><release>alpha</release><api>alpha</api></stability>
  <license uri="https://opensource.org/licenses/MIT">MIT</license>
- <notes>Source installation support for install-php-extensions.</notes>
+ <notes>Support compiling and loading the native extension on PHP 8.6 nightly.</notes>
  <contents>
   <dir name="/">
    <file name="Cargo.toml" role="src"/>

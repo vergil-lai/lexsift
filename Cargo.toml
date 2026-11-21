@@ -1,6 +1,6 @@
 [package]
 name = "lexsift"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 license = "MIT"
 description = "PHP extension for fast keyword and phrase matching using Aho–Corasick."
