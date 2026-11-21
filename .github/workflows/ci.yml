@@ -29,6 +29,29 @@ jobs:
       - name: Verify extension in runtime image
         run: docker run --rm -i lexsift-docker-test php < tests/docker/smoke.php
 
+  php-86-build:
+    name: Build extension on PHP 8.6
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.6'
+          coverage: none
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.96.1
+      - uses: Swatinem/rust-cache@v2
+      - name: Install Linux build dependencies
+        run: sudo apt-get update && sudo apt-get install -y autoconf clang-18 libclang-18-dev
+      - name: Build extension
+        run: sh scripts/build.sh
+        env:
+          CLANG_PATH: /usr/bin/clang-18
+          LIBCLANG_PATH: /usr/lib/llvm-18/lib
+      - name: Verify extension loads
+        run: php -n -d extension="$PWD/target/php-build/modules/lexsift.so" --ri lexsift
+
   test:
     strategy:
       fail-fast: false
