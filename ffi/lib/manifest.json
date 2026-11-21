@@ -1,6 +1,6 @@
 {
-    "source_commit": "96244ec785513c02b766deaffde918dc2b3dd98d",
-    "source_sha256": "8ca1fc3f5877faa1d59e0770ad11ab80f54fea594a72e6aceb2dafb94c97c414",
+    "source_commit": "1b778a8f2e756f08a2955f3173fdc099e53b8f08",
+    "source_sha256": "6a5fbd86f78c93517c522a0f5bab7f29cfadda1382ffeb77496714a7c00ccb69",
     "binaries": {
         "aarch64-apple-darwin/liblexsift.dylib": "7d53be9e779c6ab23866a63c182945b2f27647c898b5c0f3af41fb168fbf7e15",
         "aarch64-unknown-linux-gnu/liblexsift.so": "f517980cb05bcfe412ff12ad0b04097346d7f5e102ddd60088ffbf2de10a956e",
